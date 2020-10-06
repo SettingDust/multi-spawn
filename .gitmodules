@@ -1,0 +1,6 @@
+[submodule "buildSrc"]
+	path = buildSrc
+	url = https://github.com/SettingDust/blossom
+[submodule "laven-sponge"]
+	path = laven-sponge
+	url = https://github.com/SettingDust/laven-sponge

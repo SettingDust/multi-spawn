@@ -1,0 +1,21 @@
+message.respawn=&aRespawn at {{name}}
+message.waitingForName=&aSend the spawn name please
+message.set.success=&aSet point {{name}} success
+message.remove.success=&aRemove point {{name}} success
+message.activate=&aActivate point {{name}} success
+
+warp.category=&aSpawns
+
+command.error.onluPlayer=&cOnly players can execute this command
+
+command.spawn.description=Teleport to spawn
+
+command.list.description=List the spawns
+command.list.isEmpty=No spawn
+command.list.hover=Click to {{name}}
+
+command.set.description=Set a spawn
+command.set.success=&a{{name}} is set to current location
+
+command.remove.description=Remove a spawn
+command.remove.success=&a{{name}} is removed
