@@ -23,6 +23,7 @@ import org.spongepowered.api.plugin.PluginContainer
 import org.spongepowered.api.service.ServiceManager
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.action.TextActions
+import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.world.TeleportHelper
 import org.spongepowered.api.world.teleport.TeleportHelperFilters
 import java.util.function.Function
@@ -61,8 +62,21 @@ class PluginCommandManager @Inject constructor(
                                                 )
                                         }
                                         .mapNotNull { spawn ->
-                                            Text.builder("- ${spawn.first} ${spawn.second.position} ${spawn.second.extent.name}")
-                                                .onHover(TextActions.showText(localeService.getTextUnsafe(path = "command.list.hover")))
+                                            Text.builder("${spawn.first} ")
+                                                .color(TextColors.GREEN)
+                                                .append(
+                                                    Text.builder("${spawn.second.position} ${spawn.second.extent.name}")
+                                                        .color(TextColors.YELLOW)
+                                                        .build()
+                                                )
+                                                .onHover(
+                                                    TextActions.showText(
+                                                        localeService.getTextUnsafe(
+                                                            path = "command.list.hover",
+                                                            tokens = arrayOf("name" to Function { Text.of(spawn.first).optional() })
+                                                        )
+                                                    )
+                                                )
                                                 .onClick(
                                                     TextActions.executeCallback {
                                                         if (it !is Player) return@executeCallback
@@ -88,10 +102,16 @@ class PluginCommandManager @Inject constructor(
                                     .ifPresent { name ->
                                         val multiSpawnService = serviceManager.provideUnchecked<MultiSpawnService>()
                                         multiSpawnService[name] = source.location
-                                        source.sendMessage(localeService.getTextUnsafe(source, "command.set.success"))
+                                        source.sendMessage(
+                                            localeService.getTextUnsafe(
+                                                source,
+                                                "command.set.success",
+                                                "name" to Function { Text.of(name).optional() }
+                                            )
+                                        )
                                     }
                             } else {
-                                source.sendMessage(localeService.getTextUnsafe(source, "command.error.onluPlayer"))
+                                source.sendMessage(localeService.getTextUnsafe(source, "command.error.onlyPlayer"))
                             }
                             CommandResult.empty()
                         },
@@ -104,7 +124,13 @@ class PluginCommandManager @Inject constructor(
                                 .ifPresent { name ->
                                     val multiSpawnService = serviceManager.provideUnchecked<MultiSpawnService>()
                                     multiSpawnService.remove(name)
-                                    source.sendMessage(localeService.getTextUnsafe(source, "command.remove.success"))
+                                    source.sendMessage(
+                                        localeService.getTextUnsafe(
+                                            source,
+                                            "command.remove.success",
+                                            "name" to Function { Text.of(name).optional() }
+                                        )
+                                    )
                                 }
                             CommandResult.empty()
                         }

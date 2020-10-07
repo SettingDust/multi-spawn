@@ -6,7 +6,7 @@ message.activate=&a激活复生点 {{name}} 成功
 
 warp.category=&a复生点
 
-command.error.onluPlayer=只有玩家可以执行此指令
+command.error.onlyPlayer=只有玩家可以执行此指令
 
 command.spawn.description=传送至复生点
 

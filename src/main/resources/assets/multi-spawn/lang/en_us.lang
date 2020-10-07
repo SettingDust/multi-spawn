@@ -6,7 +6,7 @@ message.activate=&aActivate point {{name}} success
 
 warp.category=&aSpawns
 
-command.error.onluPlayer=&cOnly players can execute this command
+command.error.onlyPlayer=&cOnly players can execute this command
 
 command.spawn.description=Teleport to spawn
 
