@@ -33,17 +33,14 @@ class SpawnHandler @Inject constructor(
             multiSpawnService.all().firstOrNull()
                 ?.run { second }
                 ?.apply {
-                    targetEntity.location = multiSpawnService.getClosest(this)
-                        .run {
-                            teleportHelper.getSafeLocationWithBlacklist(
-                                second,
-                                3,
-                                9,
-                                2,
-                                TeleportHelperFilters.DEFAULT,
-                                waystoneTeleportHelperFilter
-                            ).unwrap() ?: second
-                        }
+                    targetEntity.location = teleportHelper.getSafeLocationWithBlacklist(
+                        this,
+                        3,
+                        9,
+                        2,
+                        TeleportHelperFilters.DEFAULT,
+                        waystoneTeleportHelperFilter
+                    ).unwrap() ?: this
                 }
         }
         pluginContainer.registerListener<RespawnPlayerEvent> {

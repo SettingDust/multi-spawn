@@ -5,6 +5,7 @@ package me.settingdust.multispawn
 import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
 import com.google.inject.Injector
+import com.google.inject.Singleton
 import me.settingdust.laven.configurate.register
 import me.settingdust.laven.configurate.subscribe
 import me.settingdust.laven.get
@@ -35,6 +36,7 @@ import java.nio.file.Path
 import java.util.Locale
 import java.util.UUID
 
+@Singleton
 @ExperimentalStdlibApi
 class ConfigManager @Inject constructor(
     pluginContainer: PluginContainer,
@@ -99,6 +101,7 @@ class MainConfig @Inject constructor(
     }
 }
 
+@Singleton
 @ExperimentalStdlibApi
 class SpawnStorage private constructor(
     configDir: Path,
@@ -123,6 +126,7 @@ class SpawnStorage private constructor(
     val spawns: ConfigurationNode = reference.node
 }
 
+@Singleton
 @ExperimentalStdlibApi
 class PlayerStorage private constructor(
     configDir: Path,
@@ -141,12 +145,10 @@ class PlayerStorage private constructor(
     @Inject
     constructor(@ConfigDir(sharedRoot = false) configDir: Path) : this(configDir, configDir.resolve("players.conf"))
 
-    operator fun get(uuid: UUID): List<String> = players[uuid].getList(typeTokenOf<String>())
+    operator fun get(uuid: UUID): List<String> = players[uuid].getList(typeTokenOf<String>(), listOf())
 
     fun add(uuid: UUID, point: String) {
-        players[uuid] = players[uuid].getList(typeTokenOf<String>()).also { it.add(point) }
-
-        save()
+        players[uuid] = get(uuid).toMutableList() + point
     }
 }
 
