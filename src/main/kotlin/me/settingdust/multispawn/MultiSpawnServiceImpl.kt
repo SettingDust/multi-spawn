@@ -21,7 +21,9 @@ import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import java.util.Comparator
 import java.util.UUID
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class MultiSpawnServiceImpl @Inject constructor(
     private val mainConfig: MainConfig,

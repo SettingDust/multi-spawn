@@ -2,7 +2,6 @@ package me.settingdust.multispawn.handler
 
 import com.google.inject.Inject
 import io.github.nucleuspowered.nucleus.api.core.event.NucleusFirstJoinEvent
-import me.settingdust.laven.optional
 import me.settingdust.laven.sponge.provideUnchecked
 import me.settingdust.laven.sponge.registerListener
 import me.settingdust.laven.unwrap
@@ -17,8 +16,9 @@ import org.spongepowered.api.service.ServiceManager
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.world.TeleportHelper
 import org.spongepowered.api.world.teleport.TeleportHelperFilters
-import java.util.function.Function
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class SpawnHandler @Inject constructor(
     pluginContainer: PluginContainer,
@@ -62,9 +62,9 @@ class SpawnHandler @Inject constructor(
             if (mainConfig.sendMessage)
                 targetEntity.sendMessage(
                     localeService.getTextUnsafe(
-                        targetEntity,
                         "message.respawn",
-                        "name" to Function { Text.of(closest.first).optional() }
+                        targetEntity,
+                        "name" to { Text.of(closest.first) }
                     )
                 )
         }

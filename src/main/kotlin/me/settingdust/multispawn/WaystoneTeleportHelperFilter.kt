@@ -4,6 +4,7 @@ import com.google.inject.Singleton
 import me.settingdust.multispawn.MultiSpawn.Companion.pluginId
 import org.spongepowered.api.block.BlockState
 import org.spongepowered.api.world.teleport.TeleportHelperFilter
+import kotlin.io.path.ExperimentalPathApi
 
 @Singleton
 @ExperimentalStdlibApi
@@ -16,6 +17,7 @@ class WaystoneTeleportHelperFilter : TeleportHelperFilter {
 
     override fun isSafeBodyMaterial(blockState: BlockState) = blockState.type.name != waystoneBlockId
 
+    @ExperimentalPathApi
     override fun getId(): String {
         return "$pluginId:waystone"
     }

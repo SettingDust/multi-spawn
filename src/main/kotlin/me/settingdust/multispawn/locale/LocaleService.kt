@@ -5,9 +5,9 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.serializer.TextSerializers
-import java.util.Optional
-import java.util.function.Function
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 @ImplementedBy(LocaleServiceImpl::class)
 interface LocaleService {
@@ -18,30 +18,30 @@ interface LocaleService {
     }
 
     operator fun get(
-        source: CommandSource = Sponge.getServer().console,
         path: String,
-        vararg tokens: Pair<String, Function<CommandSource, Optional<Text>>>
+        source: CommandSource = Sponge.getServer().console,
+        vararg tokens: Pair<String, (CommandSource) -> Text?>
     ): Text?
 
     fun getString(
-        source: CommandSource = Sponge.getServer().console,
         path: String,
-        vararg tokens: Pair<String, Function<CommandSource, Optional<Text>>>
+        source: CommandSource = Sponge.getServer().console,
+        vararg tokens: Pair<String, (CommandSource) -> Text?>
     ): String? =
-        get(source, path, *tokens)?.let { TextSerializers.FORMATTING_CODE.serialize(it) }
+        get(path, source, *tokens)?.let { TextSerializers.FORMATTING_CODE.serialize(it) }
 
     fun getTextUnsafe(
-        source: CommandSource = Sponge.getServer().console,
         path: String,
-        vararg tokens: Pair<String, Function<CommandSource, Optional<Text>>>
+        source: CommandSource = Sponge.getServer().console,
+        vararg tokens: Pair<String, (CommandSource) -> Text?>
     ): Text =
-        get(source, path, *tokens) ?: get(source, keyIsMissing, *tokens) ?: ketIsMissingText
+        get(path, source, *tokens) ?: get(keyIsMissing, source, *tokens) ?: ketIsMissingText
 
     fun getStringUnsafe(
-        source: CommandSource = Sponge.getServer().console,
         path: String,
-        vararg tokens: Pair<String, Function<CommandSource, Optional<Text>>>
+        source: CommandSource = Sponge.getServer().console,
+        vararg tokens: Pair<String, (CommandSource) -> Text?>
     ): String =
-        getString(source, path, *tokens) ?: getString(source, keyIsMissing, *tokens)
+        getString(path, source, *tokens) ?: getString(keyIsMissing, source, *tokens)
             ?: keyIsMissingString
 }

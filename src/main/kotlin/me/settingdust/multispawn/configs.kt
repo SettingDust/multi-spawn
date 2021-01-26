@@ -6,8 +6,7 @@ import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
 import com.google.inject.Injector
 import com.google.inject.Singleton
-import me.settingdust.laven.configurate.register
-import me.settingdust.laven.configurate.subscribe
+import me.settingdust.laven.configurate.subscribeAsConfiguration
 import me.settingdust.laven.get
 import me.settingdust.laven.sponge.registerListener
 import me.settingdust.laven.typeTokenOf
@@ -35,8 +34,11 @@ import org.spongepowered.api.world.World
 import java.nio.file.Path
 import java.util.Locale
 import java.util.UUID
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.div
 
 @Singleton
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class ConfigManager @Inject constructor(
     pluginContainer: PluginContainer,
@@ -52,6 +54,7 @@ class ConfigManager @Inject constructor(
     }
 }
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class MainConfig @Inject constructor(
     pluginContainer: PluginContainer,
@@ -84,6 +87,9 @@ class MainConfig @Inject constructor(
     val blocksToSync: List<String>
         get() = reference["blocksToSync"].getList(typeTokenOf<String>(), listOf(BlockTypes.BEACON.id))
 
+    val createWhenWaystoneActivate: Boolean
+        get() = reference["create spawn when waystone activating"].getBoolean(true)
+
     init {
         language
         sendMessage
@@ -96,12 +102,14 @@ class MainConfig @Inject constructor(
         reference["waystoneEnabled"].setCommentIfAbsent("Sync with Waystone(https://minecraft.curseforge.com/projects/waystones)")
         reference["activatedEnabled"].setCommentIfAbsent("Have to activate(Move to area nearby the spawn point) before respawn")
         reference["blocksToSync"].setCommentIfAbsent("Blocks to sync with the spawn point")
+        reference["create spawn when waystone activating"].setCommentIfAbsent("Use for generated waystones. Need the player has spawn.use permission")
 
         pluginContainer.registerListener<GamePostInitializationEvent> { save() }
     }
 }
 
 @Singleton
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class SpawnStorage private constructor(
     configDir: Path,
@@ -120,14 +128,16 @@ class SpawnStorage private constructor(
             .build()
     }
 ) {
+    @ExperimentalPathApi
     @Inject
-    constructor(@ConfigDir(sharedRoot = false) configDir: Path) : this(configDir, configDir.resolve("spawns.conf"))
+    constructor(@ConfigDir(sharedRoot = false) configDir: Path) : this(configDir, configDir / "spawns.conf")
 
     val spawns: ConfigurationNode = reference.node
 }
 
 @Singleton
 @ExperimentalStdlibApi
+@ExperimentalPathApi
 class PlayerStorage private constructor(
     configDir: Path,
     configPath: Path
@@ -143,7 +153,7 @@ class PlayerStorage private constructor(
     val players: CommentedConfigurationNode = reference.node
 
     @Inject
-    constructor(@ConfigDir(sharedRoot = false) configDir: Path) : this(configDir, configDir.resolve("players.conf"))
+    constructor(@ConfigDir(sharedRoot = false) configDir: Path) : this(configDir, configDir / "players.conf")
 
     operator fun get(uuid: UUID): List<String> = players[uuid].getList(typeTokenOf<String>(), listOf())
 
@@ -152,12 +162,13 @@ class PlayerStorage private constructor(
     }
 }
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 abstract class Config<N : ConfigurationNode> constructor(
     path: Path,
     loaderFunc: (Path) -> ConfigurationLoader<N>
 ) {
-    protected var reference: ConfigurationReference<N> = path.subscribe(watchServiceListener, loaderFunc)
+    protected var reference: ConfigurationReference<N> = path.subscribeAsConfiguration(watchServiceListener, loaderFunc)
 
     open fun save() = reference.save()
 }

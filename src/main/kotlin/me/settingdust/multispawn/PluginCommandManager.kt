@@ -1,7 +1,6 @@
 package me.settingdust.multispawn
 
 import com.google.inject.Inject
-import me.settingdust.laven.optional
 import me.settingdust.laven.sponge.commandSpec
 import me.settingdust.laven.sponge.provideUnchecked
 import me.settingdust.laven.sponge.registerListener
@@ -16,7 +15,7 @@ import me.settingdust.multispawn.locale.LocaleService
 import ninja.leaping.configurate.objectmapping.ObjectMappingException
 import org.spongepowered.api.command.CommandManager
 import org.spongepowered.api.command.CommandResult
-import org.spongepowered.api.command.args.GenericArguments.string
+import org.spongepowered.api.command.args.GenericArguments.choices
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.game.state.GameStartingServerEvent
 import org.spongepowered.api.plugin.PluginContainer
@@ -26,8 +25,9 @@ import org.spongepowered.api.text.action.TextActions
 import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.world.TeleportHelper
 import org.spongepowered.api.world.teleport.TeleportHelperFilters
-import java.util.function.Function
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @Suppress("UnstableApiUsage")
 @ExperimentalStdlibApi
 class PluginCommandManager @Inject constructor(
@@ -73,7 +73,11 @@ class PluginCommandManager @Inject constructor(
                                                     TextActions.showText(
                                                         localeService.getTextUnsafe(
                                                             path = "command.list.hover",
-                                                            tokens = arrayOf("name" to Function { Text.of(spawn.first).optional() })
+                                                            tokens = arrayOf(
+                                                                "name" to {
+                                                                    Text.of(spawn.first)
+                                                                }
+                                                            )
                                                         )
                                                     )
                                                 )
@@ -93,9 +97,17 @@ class PluginCommandManager @Inject constructor(
                             }
                         },
                         listOf("set", "s") to commandSpec(
-                            permission = commandSetPermission,
                             description = localeService.getTextUnsafe(path = "command.set.description"),
-                            arguments = arrayOf(string(Text.of("name")))
+                            extendedDescription = null,
+                            permission = commandSetPermission,
+                            choices(
+                                Text.of("name"),
+                                {
+                                    val multiSpawnService = serviceManager.provideUnchecked<MultiSpawnService>()
+                                    multiSpawnService.all().map { it.first }.toSet()
+                                },
+                                { it }
+                            )
                         ) { source, context ->
                             if (source is Player) {
                                 context.getOne<String>("name")
@@ -104,21 +116,32 @@ class PluginCommandManager @Inject constructor(
                                         multiSpawnService[name] = source.location
                                         source.sendMessage(
                                             localeService.getTextUnsafe(
-                                                source,
                                                 "command.set.success",
-                                                "name" to Function { Text.of(name).optional() }
+                                                source,
+                                                "name" to { Text.of(name) }
                                             )
                                         )
                                     }
                             } else {
-                                source.sendMessage(localeService.getTextUnsafe(source, "command.error.onlyPlayer"))
+                                source.sendMessage(localeService.getTextUnsafe("command.error.onlyPlayer", source))
                             }
                             CommandResult.empty()
                         },
                         listOf("remove", "rm", "r") to commandSpec(
-                            permission = commandRemovePermission,
                             description = localeService.getTextUnsafe(path = "command.remove.description"),
-                            arguments = arrayOf(string(Text.of("name")))
+                            extendedDescription = null,
+                            permission = commandRemovePermission,
+                            choices(
+                                Text.of("name"),
+                                {
+                                    val multiSpawnService = serviceManager.provideUnchecked<MultiSpawnService>()
+                                    multiSpawnService.all()
+                                        .map { it.first }
+                                        .map { if (it.contains(" ")) "'$it'" else it }
+                                        .toSet()
+                                },
+                                { it }
+                            )
                         ) { source, context ->
                             context.getOne<String>("name")
                                 .ifPresent { name ->
@@ -126,9 +149,9 @@ class PluginCommandManager @Inject constructor(
                                     multiSpawnService.remove(name)
                                     source.sendMessage(
                                         localeService.getTextUnsafe(
-                                            source,
                                             "command.remove.success",
-                                            "name" to Function { Text.of(name).optional() }
+                                            source,
+                                            "name" to { Text.of(name) }
                                         )
                                     )
                                 }
@@ -153,9 +176,9 @@ class PluginCommandManager @Inject constructor(
                         if (mainConfig.sendMessage)
                             source.sendMessage(
                                 localeService.getTextUnsafe(
-                                    source,
                                     "message.respawn",
-                                    "name" to Function { Text.of(closest.first).optional() }
+                                    source,
+                                    "name" to { Text.of(closest.first) }
                                 )
                             )
                         CommandResult.success()

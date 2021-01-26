@@ -9,7 +9,9 @@ import org.spongepowered.api.plugin.Dependency
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 @Plugin(
     id = MultiSpawn.pluginId,
@@ -27,9 +29,9 @@ class MultiSpawn
     pluginCommandManager: PluginCommandManager
 ) {
     companion object {
-        const val pluginId = "multi-spawn"
+        const val pluginId = "multispawn"
         const val pluginName = "Multi Spawn"
-        const val pluginVersion = "@version@"
+        const val pluginVersion = "3.0.0"
         const val pluginDescription = "Respawn at the closest spawn point"
 
         val watchServiceListener: WatchServiceListener = WatchServiceListener.create()

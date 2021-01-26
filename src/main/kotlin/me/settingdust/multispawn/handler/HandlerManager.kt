@@ -7,7 +7,9 @@ import me.settingdust.laven.sponge.registerListener
 import me.settingdust.laven.typeTokenOf
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent
 import org.spongepowered.api.plugin.PluginContainer
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class HandlerManager @Inject constructor(
     pluginContainer: PluginContainer,

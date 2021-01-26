@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.inject.Inject
 import me.settingdust.laven.caffeine.set
-import me.settingdust.laven.optional
 import me.settingdust.laven.sponge.provideUnchecked
 import me.settingdust.laven.sponge.registerListener
 import me.settingdust.laven.unwrap
@@ -23,8 +22,9 @@ import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
+import kotlin.io.path.ExperimentalPathApi
 
+@ExperimentalPathApi
 @ExperimentalStdlibApi
 class BlockSyncHandler @Inject constructor(
     mainConfig: MainConfig,
@@ -53,7 +53,7 @@ class BlockSyncHandler @Inject constructor(
                 ?.ifPresent {
                     typingPlayerCache[player.uniqueId] = it
                     if (mainConfig.sendMessage)
-                        player.sendMessage(localeService.getTextUnsafe(player, "message.waitingForName"))
+                        player.sendMessage(localeService.getTextUnsafe("message.waitingForName", player))
                 }
         }
 
@@ -71,9 +71,9 @@ class BlockSyncHandler @Inject constructor(
                     if (mainConfig.sendMessage)
                         player.sendMessage(
                             localeService.getTextUnsafe(
-                                player,
                                 "message.set.success",
-                                "name" to Function { rawMessage.optional() }
+                                player,
+                                "name" to { rawMessage }
                             )
                         )
                 }
@@ -101,9 +101,9 @@ class BlockSyncHandler @Inject constructor(
                     if (mainConfig.sendMessage)
                         player.sendMessage(
                             localeService.getTextUnsafe(
-                                player,
                                 "message.remove.success",
-                                "name" to Function { Text.of(name).optional() }
+                                player,
+                                "name" to { Text.of(name) }
                             )
                         )
                 }
