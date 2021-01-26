@@ -31,7 +31,7 @@ class MultiSpawn
     companion object {
         const val pluginId = "multispawn"
         const val pluginName = "Multi Spawn"
-        const val pluginVersion = "3.0.0"
+        const val pluginVersion = "3.1.0"
         const val pluginDescription = "Respawn at the closest spawn point"
 
         val watchServiceListener: WatchServiceListener = WatchServiceListener.create()
