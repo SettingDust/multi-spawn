@@ -5,20 +5,17 @@ buildscript {
         }
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30-M1")
         classpath("com.github.jengelman.gradle.plugins:shadow:6.0.0")
         classpath("org.jmailen.gradle:kotlinter-gradle:3.0.2")
     }
-}
-
-plugins {
-    id("net.kyori.blossom")
 }
 
 applyPlugin("org.jetbrains.kotlin.jvm")
 applyPlugin("org.jetbrains.kotlin.kapt")
 applyPlugin("com.github.johnrengelman.shadow")
 applyPlugin("org.jmailen.kotlinter")
+//applyPlugin("net.kyori.blossom")
 
 def applyPlugin(id) {
     if (project.plugins.findPlugin(id) != null) {
@@ -28,7 +25,7 @@ def applyPlugin(id) {
     }
 }
 
-def major = 0
+def major = 3
 def minor = 1
 def patch = 0
 
@@ -39,8 +36,8 @@ version = mainVersion
 
 if (System.getenv("BUILD_NUMBER") != null)
     version += ".b${System.getenv("BUILD_NUMBER").toString()}"
-if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev"))
-    version += "-dev"
+//if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev"))
+//    version += "-dev"
 
 repositories {
     mavenCentral()
@@ -81,9 +78,9 @@ dependencies {
     api project("laven-sponge:laven")
 }
 
-blossom {
-    replaceToken "@version@", mainVersion
-}
+//blossom {
+//    replaceToken "@version@", mainVersion
+//}
 
 kotlinter {
     ignoreFailures = true
